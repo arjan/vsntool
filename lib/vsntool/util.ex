@@ -26,7 +26,7 @@ defmodule Vsntool.Util do
 
     br = branch()
 
-    if br != vsn_branch do
+    if br != vsn_branch() do
       add =
         br
         |> String.replace("_", "-")
