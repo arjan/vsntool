@@ -31,7 +31,7 @@ To retrieve the last released version, run:
 (which is equivalent to `cat VERSION`).
 
 
-## Initialization
+### Initialization
 
 `vsntool init` initializes a VERSION file in a directory and ensures
 it has a git repository:
@@ -103,3 +103,11 @@ vsntool is an Elixir project, but builds as an *escript*, a self-contained binar
 ```
 # mix escript.build
 ```
+
+Happy versioning!
+
+
+## To do
+
+- Improve error reporting, error messages (stop using `:os.cmd`)
+- Add support for release-candidate-like versions (1.0.0-rc1)
