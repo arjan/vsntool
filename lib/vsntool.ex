@@ -37,6 +37,10 @@ defmodule Vsntool do
     persist_version(Version.parse!("0.0.1"))
   end
 
+  def main(["last"]) do
+    IO.puts(File.read!("VERSION"))
+  end
+
   def main(["--version"]) do
     IO.puts(@version)
   end

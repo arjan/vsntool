@@ -12,7 +12,7 @@ Copy the provided `vsntool` binary to somewhere in your path.
 
 ```
 ▶ vsntool
-0.1.1
+0.1.2-1-g88547df
 ```
 
 Running `vsntool` without arguments runs `git describe --tags`, which
@@ -20,6 +20,16 @@ retrieves the last version number, but appended with a unique
 identifier which describes the current commit. This is handy in CI
 systems and development setups where you often want to build or
 release snapshots which contain no official version.
+
+To retrieve the last released version, run:
+
+```
+▶ vsntool last
+0.1.2-1-g88547df
+```
+
+(which is equivalent to `cat VERSION`).
+
 
 ## Initialization
 
@@ -82,7 +92,7 @@ When releasing your library as dependency, do not forget to add the VERSION file
 To enable command completion, add the following to your `~/.zshrc` or `~/.bashrc`:
 
 ```
-complete -W "init bump_major bump_minor bump_patch" vsntool
+complete -W "init bump_major bump_minor bump_patch last" vsntool
 ```
 
 
