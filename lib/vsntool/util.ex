@@ -25,11 +25,11 @@ defmodule Vsntool.Util do
   end
 
   def bump(:major, v) do
-    %Version{v | major: v.major + 1, pre: []}
+    %Version{v | major: v.major + 1, minor: 0, patch: 0, pre: []}
   end
 
   def bump(:minor, v) do
-    %Version{v | minor: v.minor + 1, pre: []}
+    %Version{v | minor: v.minor + 1, patch: 0, pre: []}
   end
 
   def bump(:patch, v) do

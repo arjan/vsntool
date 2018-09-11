@@ -20,12 +20,21 @@ defmodule Vsntool do
       flunk("Current commit is already tagged (#{vsn})")
     end
 
-    vsn = bump(String.to_atom(kind), vsn)
-    File.write!("VERSION", to_string(vsn))
+    bump(String.to_atom(kind), vsn)
+    |> persist_version()
+  end
 
-    shell("git add VERSION && git commit -m 'Bump version to #{vsn}'")
-    shell("git tag -a '#{vsn_prefix()}#{vsn}' -m 'Tagged version #{vsn}'")
-    IO.puts("Version bump to #{vsn} OK.")
+  def main(["init"]) do
+    if File.exists?("VERSION") do
+      flunk("This project already has a VERSION file")
+    end
+
+    if !File.exists?(".git") do
+      IO.puts("Initialized git repository")
+      shell("git init")
+    end
+
+    persist_version(Version.parse!("0.0.1"))
   end
 
   def main(["--version"]) do
@@ -33,6 +42,14 @@ defmodule Vsntool do
   end
 
   def main(_) do
-    flunk("Usage: vsntool (bump_major|bump_minor|bump_patch)")
+    flunk("Usage: vsntool (init|bump_major|bump_minor|bump_patch)")
+  end
+
+  def persist_version(vsn) do
+    File.write!("VERSION", to_string(vsn))
+
+    shell("git add VERSION && git commit -m 'Bump version to #{vsn}'")
+    shell("git tag -a '#{vsn_prefix()}#{vsn}' -m 'Tagged version #{vsn}'")
+    IO.puts("Version bump to #{vsn} OK.")
   end
 end
