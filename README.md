@@ -30,6 +30,18 @@ To retrieve the last released version, run:
 
 (which is equivalent to `cat VERSION`).
 
+The default branch on which the releases are being tagged is
+`master`. To change this, change the environment variable
+`VSN_BRANCH`.
+
+When vsntool is run on a non-release branch, the branch name is added
+to the version:
+
+```
+▶ git checkout develop
+▶ vsntool
+0.1.2-1-develop.1-g88547df
+```
 
 ### Initialization
 

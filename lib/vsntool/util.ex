@@ -18,10 +18,24 @@ defmodule Vsntool.Util do
   end
 
   def version_from_git() do
-    shell("git describe --tags")
-    |> String.replace(vsn_prefix(), "")
-    |> String.replace("_", "-")
-    |> Version.parse!()
+    version =
+      shell("git describe --tags")
+      |> String.replace(vsn_prefix(), "")
+      |> String.replace("_", "-")
+      |> Version.parse!()
+
+    br = branch()
+
+    if br != vsn_branch do
+      add =
+        br
+        |> String.replace("_", "-")
+        |> String.replace("/", "-")
+
+      %{version | pre: [add | version.pre]}
+    else
+      version
+    end
   end
 
   def bump(:major, v) do
