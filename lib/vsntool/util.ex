@@ -14,7 +14,7 @@ defmodule Vsntool.Util do
 
   def flunk(message) do
     IO.write(:stderr, message <> "\n")
-    System.stop(1)
+    System.halt(1)
   end
 
   def version_from_git() do
