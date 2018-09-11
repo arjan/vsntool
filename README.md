@@ -87,6 +87,14 @@ When releasing your library as dependency, do not forget to add the VERSION file
       ...
 ```
 
+### Usage with docker
+
+Build the current project and tag it with the correct version:
+
+```
+▶ docker build . -t organisation/projectname:$(vsntool)
+```
+
 ## Bash / zsh completion
 
 To enable command completion, add the following to your `~/.zshrc` or `~/.bashrc`:
