@@ -25,7 +25,7 @@ To retrieve the last released version, run:
 
 ```
 ▶ vsntool last
-0.1.2-1-g88547df
+0.1.2
 ```
 
 (which is equivalent to `cat VERSION`).
