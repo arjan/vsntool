@@ -1,6 +1,8 @@
 defmodule Vsntool do
   import Vsntool.Util
 
+  @version Vsntool.MixProject.project()[:version]
+
   def main([]) do
     IO.puts(version_from_git())
   end
@@ -24,6 +26,10 @@ defmodule Vsntool do
     shell("git add VERSION && git commit -m 'Bump version to #{vsn}'")
     shell("git tag -a '#{vsn_prefix()}#{vsn}' -m 'Tagged version #{vsn}'")
     IO.puts("Version bump to #{vsn} OK.")
+  end
+
+  def main(["--version"]) do
+    IO.puts(@version)
   end
 
   def main(_) do

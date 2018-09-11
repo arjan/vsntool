@@ -4,7 +4,7 @@ defmodule Vsntool.MixProject do
   def project do
     [
       app: :vsntool,
-      version: "0.1.0",
+      version: File.read!("VERSION"),
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
       escript: [main_module: Vsntool],
