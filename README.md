@@ -68,10 +68,10 @@ Tracking your Elixir project's version number is easy; in your
 `mix.exs` file, you don't hardcode the version number but instead read
 it from the VERSION file:
 
-```
+```elixir
   def project do
     [
-      app: :vsntool,
+      app: :myproject,
       version: File.read!("VERSION")
       ...
 ```
@@ -80,7 +80,7 @@ This file is evaluated at compile time, so there is no runtime dependency on the
 
 When releasing your library as dependency, do not forget to add the VERSION file to the list of to-be-packaged files:
 
-```
+```elixir
   defp package do
     %{
       files: ["lib", "mix.exs", "*.md", "LICENSE", "VERSION"],
