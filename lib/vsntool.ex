@@ -1,7 +1,7 @@
 defmodule Vsntool do
   import Vsntool.Util
 
-  @version Vsntool.MixProject.project()[:version]
+  @vsntool_version Vsntool.MixProject.project()[:version]
   @options %{
     "i" => "init",
     "bm" => "bump_major",
@@ -56,7 +56,7 @@ defmodule Vsntool do
   end
 
   def main(["--version"]) do
-    IO.puts(@version)
+    IO.puts(@vsntool_version)
   end
 
   def main(["help"]) do
