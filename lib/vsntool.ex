@@ -13,15 +13,21 @@ defmodule Vsntool do
   }
   @shortcuts Map.keys(@options)
 
-  def main([]) do
+  def main([]), do: execute("current_version")
+
+  def main([option]), do: execute(option)
+
+  def main(_), do: execute("usage")
+
+  defp execute(shortcut) when shortcut in @shortcuts do
+    execute(@options[shortcut])
+  end
+
+  defp execute("current_version") do
     IO.puts(version_from_git())
   end
 
-  def main([shortcut]) when shortcut in @shortcuts do
-    main([@options[shortcut]])
-  end
-
-  def main(["bump_" <> kind]) when kind in ~w(major minor patch) do
+  defp execute("bump_" <> kind) when kind in ~w(major minor patch) do
     if branch() != vsn_branch() do
       flunk(
         "You need to be on branch #{vsn_branch()} to bump versions (currently on #{branch()})"
@@ -38,7 +44,7 @@ defmodule Vsntool do
     |> persist_version()
   end
 
-  def main(["init"]) do
+  defp execute("init") do
     if File.exists?("VERSION") do
       flunk("This project already has a VERSION file")
     end
@@ -51,15 +57,15 @@ defmodule Vsntool do
     persist_version(Version.parse!("0.0.1"))
   end
 
-  def main(["last"]) do
+  defp execute("last") do
     IO.puts(File.read!("VERSION"))
   end
 
-  def main(["--version"]) do
+  defp execute("--version") do
     IO.puts(@vsntool_version)
   end
 
-  def main(["help"]) do
+  defp execute("help") do
     help_message = """
     Usage: vsntool [options]
     Options:
@@ -75,11 +81,11 @@ defmodule Vsntool do
     IO.puts(help_message)
   end
 
-  def main(_) do
+  defp execute("usage") do
     flunk("Usage: vsntool (init|bump_major|bump_minor|bump_patch|help)")
   end
 
-  def persist_version(vsn) do
+  defp persist_version(vsn) do
     File.write!("VERSION", to_string(vsn))
 
     shell("git add VERSION && git commit -m 'Bump version to #{vsn}'")
