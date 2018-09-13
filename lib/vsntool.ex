@@ -2,9 +2,23 @@ defmodule Vsntool do
   import Vsntool.Util
 
   @version Vsntool.MixProject.project()[:version]
+  @options %{
+    "i" => "init",
+    "bm" => "bump_major",
+    "bi" => "bump_minor",
+    "bp" => "bump_patch",
+    "l" => "last",
+    "h" => "help",
+    "v" => "--version"
+  }
+  @shortcuts Map.keys(@options)
 
   def main([]) do
     IO.puts(version_from_git())
+  end
+
+  def main([shortcut]) when shortcut in @shortcuts do
+    main([@options[shortcut]])
   end
 
   def main(["bump_" <> kind]) when kind in ~w(major minor patch) do
@@ -45,8 +59,24 @@ defmodule Vsntool do
     IO.puts(@version)
   end
 
+  def main(["help"]) do
+    help_message = """
+    Usage: vsntool [options]
+    Options:
+      i,  init        Create a new VERSION file and initialize a git repository
+      bm, bump_major  Bump major version
+      bi, bump_minor  Bump minor version
+      bp, bump_patch  Bump patch version
+      l,  last        Display last version
+      h,  help        Display this help
+      v,  --version   Display vsntool version
+    """
+
+    IO.puts(help_message)
+  end
+
   def main(_) do
-    flunk("Usage: vsntool (init|bump_major|bump_minor|bump_patch)")
+    flunk("Usage: vsntool (init|bump_major|bump_minor|bump_patch|help)")
   end
 
   def persist_version(vsn) do
