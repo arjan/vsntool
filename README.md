@@ -118,13 +118,13 @@ complete -W "init bump_major bump_minor bump_patch last" vsntool
 
 ## Building
 
-vsntool is an Elixir project, but builds as an *escript*, a self-contained binary. To build it, run:
+vsntool is an Elixir project, but builds as an *escript*, a self-contained binary. To build it, you need to have Elixir installed, then run:
 
 ```
-# mix escript.build
+▶ make
 ```
 
-Happy versioning!
+This produces a fresh version of the `vsntool` binary in the root of the repository. Happy versioning!
 
 
 ## To do
