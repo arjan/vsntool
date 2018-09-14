@@ -12,10 +12,13 @@ defmodule Vsntool do
     "v" => "--version"
   }
   @shortcuts Map.keys(@options)
+  @commands Map.values(@options)
 
   def main([]), do: execute("current_version")
 
-  def main([option]), do: execute(option)
+  def main([command]) when command in @commands do
+    execute(command)
+  end
 
   def main(_), do: execute("usage")
 
