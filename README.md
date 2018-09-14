@@ -129,5 +129,6 @@ Happy versioning!
 
 ## To do
 
-- Improve error reporting, error messages (stop using `:os.cmd`)
 - Add support for release-candidate-like versions (1.0.0-rc1)
+- Improve error reporting, error messages (stop using `:os.cmd`)
+- Use [artificery](https://github.com/bitwalker/artificery) for command parsing
