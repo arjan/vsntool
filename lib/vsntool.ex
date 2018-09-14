@@ -20,11 +20,11 @@ defmodule Vsntool do
     execute(command)
   end
 
-  def main(_), do: execute("usage")
-
-  defp execute(shortcut) when shortcut in @shortcuts do
+  def main([shortcut]) when shortcut in @shortcuts do
     execute(@options[shortcut])
   end
+
+  def main(_), do: execute("usage")
 
   defp execute("current_version") do
     IO.puts(version_from_git())
