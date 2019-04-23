@@ -1,6 +1,8 @@
 defmodule Vsntool do
   import Vsntool.Util
 
+  alias Vsntool.Plugin
+
   @vsntool_version Vsntool.MixProject.project()[:version]
   @options %{
     "i" => "init",
@@ -90,8 +92,12 @@ defmodule Vsntool do
 
   defp persist_version(vsn) do
     File.write!("VERSION", to_string(vsn))
+    shell("git add VERSION")
 
-    shell("git add VERSION && git commit -m 'Bump version to #{vsn}'")
+    Plugin.discover()
+    |> Enum.map(& &1.persist_version(vsn))
+
+    shell("git commit -m 'Bump version to #{vsn}'")
     shell("git tag -a '#{vsn_prefix()}#{vsn}' -m 'Tagged version #{vsn}'")
     IO.puts("Version bump to #{vsn} OK.")
   end
