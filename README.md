@@ -99,6 +99,13 @@ When releasing your library as dependency, do not forget to add the VERSION file
       ...
 ```
 
+### Usage in Javascript projects
+
+Since v1.4, `vsntool` automatically detects the existence of a
+top-level package.json file and injects the version in it whenever it
+changes it in the VERSION file.
+
+
 ### Usage with docker
 
 Build the current project and tag it with the correct version:
