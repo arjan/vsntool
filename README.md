@@ -4,6 +4,16 @@ The `vsntool` maintains git tags and a text file, VERSION, which
 tracks the current software's version number. It provides an easy
 method of bumping the major, mnior and patch versions of the software.
 
+The authoritative version of a project is in the VERSION
+file. `vsntool` also maintains this version number in several other
+files in the repository:
+
+- `package.json` — for NPM packages
+- `app.json` — for Expo (React Native) projects.
+
+By using the `vsntool` commands, the version numbers are automatically patched in these files.
+
+
 ## Installation
 
 Copy the provided `vsntool` binary to somewhere in your path.
