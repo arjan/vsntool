@@ -41,7 +41,7 @@ defmodule Vsntool do
 
     vsn = version_from_git()
 
-    if vsn.pre == [] do
+    if vsn.pre == [] && System.get_env("FORCE") != "true" do
       flunk("Current commit is already tagged (#{vsn})")
     end
 
@@ -95,7 +95,10 @@ defmodule Vsntool do
     shell("git add VERSION")
 
     Plugin.discover()
-    |> Enum.map(& &1.persist_version(vsn))
+    |> Enum.map(fn mod ->
+      IO.puts("* Using plugin: #{inspect(mod)}")
+      mod.persist_version(vsn)
+    end)
 
     shell("git commit -m 'Bump version to #{vsn}'")
     shell("git tag -a '#{vsn_prefix()}#{vsn}' -m 'Tagged version #{vsn}'")
