@@ -1,5 +1,8 @@
 defmodule Vsntool.Plugin do
-  @all [Vsntool.Plugin.PackageJson]
+  @all [
+    Vsntool.Plugin.PackageJson,
+    Vsntool.Plugin.ExpoJson
+  ]
 
   def discover() do
     @all
