@@ -1,7 +1,8 @@
 defmodule Vsntool.Plugin do
   @all [
     Vsntool.Plugin.PackageJson,
-    Vsntool.Plugin.ExpoJson
+    Vsntool.Plugin.ExpoJson,
+    Vsntool.Plugin.CordovaConfigXml
   ]
 
   def discover() do
