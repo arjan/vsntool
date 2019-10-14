@@ -25,7 +25,7 @@ defmodule Vsntool.RegexPatcher do
   def change_version(contents, regex, vsn) do
     case Regex.run(regex, contents) do
       [_all, oldvsn] ->
-        {:ok, String.replace(contents, oldvsn, vsn)}
+        {:ok, String.replace(contents, oldvsn, to_string(vsn))}
 
       _ ->
         {:error, "Version number not found in file"}
