@@ -15,17 +15,24 @@ defmodule Vsntool.RegexPatcher do
         filename = unquote(filename)
         contents = File.read!(filename)
         regex = unquote(regex)
-        {:ok, contents} = change_version(contents, regex, vsn)
+        replace = to_version_string(vsn)
+        {:ok, contents} = change_version(contents, regex, replace)
         File.write!(filename, contents)
         shell("git add '#{filename}'")
       end
+
+      def to_version_string(vsn) do
+        to_string(vsn)
+      end
+
+      defoverridable to_version_string: 1
     end
   end
 
   def change_version(contents, regex, vsn) do
     case Regex.run(regex, contents) do
       [_all, oldvsn] ->
-        {:ok, String.replace(contents, oldvsn, to_string(vsn))}
+        {:ok, String.replace(contents, oldvsn, vsn)}
 
       _ ->
         {:error, "Version number not found in file"}
