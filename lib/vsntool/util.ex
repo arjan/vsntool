@@ -9,7 +9,19 @@ defmodule Vsntool.Util do
   end
 
   def branch() do
-    shell("git rev-parse --abbrev-ref HEAD")
+    case shell("git rev-parse --abbrev-ref HEAD") do
+      "HEAD" ->
+        case shell("git log -n 1 --pretty=%d HEAD") do
+          "(HEAD, " <> b ->
+            String.trim_trailing(b, ")")
+
+          _ ->
+            "HEAD"
+        end
+
+      v ->
+        v
+    end
   end
 
   def flunk(message) do
