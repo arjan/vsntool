@@ -38,7 +38,7 @@ defmodule Vsntool.Util do
 
     br = branch()
 
-    if br != vsn_branch() do
+    if br != vsn_branch() and not Enum.member?(version.pre, br) do
       add =
         br
         |> String.replace("_", "-")
