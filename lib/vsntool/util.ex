@@ -42,14 +42,23 @@ defmodule Vsntool.Util do
     br = branch()
 
     if br != vsn_branch() do
-      hash = shell("git rev-parse --short=6 HEAD")
+      pre =
+        case Version.parse(br) do
+          {:ok, %Version{pre: pre}} ->
+            pre
 
-      add =
-        br
-        |> String.replace("_", "-")
-        |> String.replace("/", "-")
+          _ ->
+            hash = shell("git rev-parse --short=6 HEAD")
 
-      %{version | pre: [add, hash]}
+            add =
+              br
+              |> String.replace("_", "-")
+              |> String.replace("/", "-")
+
+            [add, hash]
+        end
+
+      %{version | pre: pre}
     else
       version
     end
