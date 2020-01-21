@@ -12,6 +12,9 @@ defmodule Vsntool.Util do
     case shell("git rev-parse --abbrev-ref HEAD") do
       "HEAD" ->
         case shell("git log -n 1 --pretty=%d HEAD") do
+          "(HEAD, tag: " <> b ->
+            Regex.replace(~r/[\),].*$/, b, "")
+
           "(HEAD, " <> b ->
             String.trim_trailing(b, ")")
 
