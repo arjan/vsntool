@@ -41,13 +41,9 @@ defmodule Vsntool.Util do
 
     br = branch()
 
-    if br != vsn_branch() and not Enum.member?(version.pre, br) do
-      add =
-        br
-        |> String.replace("_", "-")
-        |> String.replace("/", "-")
-
-      %{version | pre: [add | version.pre]}
+    if br != vsn_branch() do
+      hash = shell("git rev-parse --short=6 HEAD")
+      %{version | pre: [br, hash]}
     else
       version
     end
