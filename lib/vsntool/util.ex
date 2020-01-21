@@ -31,7 +31,7 @@ defmodule Vsntool.Util do
 
   def version_from_git() do
     version =
-      shell("git describe --tags")
+      shell("git describe --tags --abbrev=5")
       |> String.replace(vsn_prefix(), "")
       |> String.replace("_", "-")
       |> Version.parse!()
