@@ -13,10 +13,10 @@ defmodule Vsntool.Util do
       "HEAD" ->
         case shell("git log -n 1 --pretty=%d HEAD") do
           "(HEAD, tag: " <> b ->
-            Regex.replace(~r/[\),].*$/, b, "")
+            Regex.replace(~r/[\s\),].*$/, b, "")
 
           "(HEAD, " <> b ->
-            String.trim_trailing(b, ")")
+            Regex.replace(~r/[\s\),].*$/, b, "")
 
           _ ->
             "HEAD"
