@@ -11,8 +11,6 @@ defmodule Vsntool.RegexPatcherTest do
 
     {:ok, new} = RegexPatcher.change_version(contents, ~r/a=\"(.*?)\"/, "2.0")
 
-    IO.inspect(new, label: "new")
-
     {:error, "Version number not found" <> _} =
       RegexPatcher.change_version(contents, ~r/fsdfdas/, "xx")
   end

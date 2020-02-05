@@ -11,7 +11,7 @@ defmodule Vsntool.Util do
   def branch() do
     case shell("git rev-parse --abbrev-ref HEAD") do
       "HEAD" ->
-        case shell("git log -n 1 --pretty=%d HEAD") |> IO.inspect(label: "x") do
+        case shell("git log -n 1 --pretty=%d HEAD") do
           # "(HEAD, tag: " <> b ->
           #   Regex.replace(~r/[\s\),].*$/, b, "")
 
