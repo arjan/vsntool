@@ -102,9 +102,8 @@ defmodule VsntoolTest do
 
     Util.shell("git checkout -b feature/my-test")
 
-    assert capture_io(fn ->
-             Vsntool.main([])
-           end) =~ "0.0.1-feature-my-test\."
+    {:ok, vsn} = Util.version_from_git()
+    assert to_string(vsn) =~ "0.0.1-feature-my-test\."
 
     File.write!("testfile", "xx")
     Util.shell("git commit -am 'test commit'")
@@ -113,8 +112,27 @@ defmodule VsntoolTest do
     File.write!("testfile", "xx2")
     Util.shell("git commit -am 'test commit'")
 
+    {:ok, vsn} = Util.version_from_git()
+    assert to_string(vsn) =~ "0.0.1-feature-my-test\."
+  end
+
+  test "vsntool on git branch when checked out a single commit" do
     assert capture_io(fn ->
-             Vsntool.main([])
-           end) =~ "0.0.1-feature-my-test\."
+             Vsntool.main(["init"])
+           end) =~ "Initialized git repository"
+
+    Util.shell("git checkout -b feature/my-test")
+
+    {:ok, vsn} = Util.version_from_git()
+    assert to_string(vsn) =~ "0.0.1-feature-my-test\."
+
+    File.write!("testfile", "xx")
+    Util.shell("git commit -am 'test commit'")
+
+    commit = Util.shell("git rev-parse HEAD")
+    Util.shell("git checkout #{commit}")
+
+    {:ok, vsn} = Util.version_from_git()
+    assert to_string(vsn) =~ "0.0.1-feature-my-test\."
   end
 end

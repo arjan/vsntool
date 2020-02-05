@@ -11,15 +11,21 @@ defmodule Vsntool.Util do
   def branch() do
     case shell("git rev-parse --abbrev-ref HEAD") do
       "HEAD" ->
-        case shell("git log -n 1 --pretty=%d HEAD") do
-          # "(HEAD, tag: " <> b ->
-          #   Regex.replace(~r/[\s\),].*$/, b, "")
+        case shell("git log -n 1 --pretty=%d HEAD") |> IO.inspect(label: "x") do
+          "(HEAD, " <> comp ->
+            components =
+              comp
+              |> String.trim_trailing(")")
+              |> String.split(", ")
+              |> Enum.reject(&(match?("tag:" <> _, &1) || &1 == vsn_branch()))
 
-          # "(HEAD, " <> b ->
-          #   Regex.replace(~r/[\s\),].*$/, b, "")
+            case components do
+              [first | _] -> first
+              [] -> ""
+            end
 
           _ ->
-            "HEAD"
+            ""
         end
 
       v ->
