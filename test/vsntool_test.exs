@@ -102,7 +102,7 @@ defmodule VsntoolTest do
 
     Util.shell("git checkout -b feature/my-test")
 
-    {:ok, vsn} = Util.version_from_git()
+    vsn = Util.version_from_git()
     assert to_string(vsn) =~ "0.0.1-feature-my-test\."
 
     File.write!("testfile", "xx")
@@ -112,7 +112,7 @@ defmodule VsntoolTest do
     File.write!("testfile", "xx2")
     Util.shell("git commit -am 'test commit'")
 
-    {:ok, vsn} = Util.version_from_git()
+    vsn = Util.version_from_git()
     assert to_string(vsn) =~ "0.0.1-feature-my-test\."
   end
 
@@ -123,7 +123,7 @@ defmodule VsntoolTest do
 
     Util.shell("git checkout -b feature/my-test")
 
-    {:ok, vsn} = Util.version_from_git()
+    vsn = Util.version_from_git()
     assert to_string(vsn) =~ "0.0.1-feature-my-test\."
 
     File.write!("testfile", "xx")
@@ -132,7 +132,20 @@ defmodule VsntoolTest do
     commit = Util.shell("git rev-parse HEAD")
     Util.shell("git checkout #{commit}")
 
-    {:ok, vsn} = Util.version_from_git()
+    vsn = Util.version_from_git()
     assert to_string(vsn) =~ "0.0.1-feature-my-test\."
+  end
+
+  test "vsntool when no names found" do
+    assert capture_io(fn ->
+             Vsntool.main(["init"])
+           end) =~ "Initialized git repository"
+
+    commit = Util.shell("git rev-parse HEAD")
+    Util.shell("git checkout #{commit}")
+    Util.shell("git branch -d master")
+    Util.shell("git tag -d 0.0.1")
+    vsn = Util.version_from_git()
+    assert to_string(vsn) =~ "0.0.1-unknown\."
   end
 end

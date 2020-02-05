@@ -9,7 +9,7 @@ defmodule Vsntool.RegexPatcherTest do
     </xml>
     """
 
-    {:ok, new} = RegexPatcher.change_version(contents, ~r/a=\"(.*?)\"/, "2.0")
+    {:ok, _new} = RegexPatcher.change_version(contents, ~r/a=\"(.*?)\"/, "2.0")
 
     {:error, "Version number not found" <> _} =
       RegexPatcher.change_version(contents, ~r/fsdfdas/, "xx")

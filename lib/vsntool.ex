@@ -29,13 +29,7 @@ defmodule Vsntool do
   def main(_), do: execute("usage")
 
   defp execute("current_version") do
-    case version_from_git() do
-      {:ok, v} ->
-        IO.puts(v)
-
-      e ->
-        IO.puts("*** not a valid git version: " <> inspect(e))
-    end
+    IO.puts(version_from_git())
   end
 
   defp execute("bump_" <> kind) when kind in ~w(major minor patch) do
@@ -45,7 +39,7 @@ defmodule Vsntool do
       )
     end
 
-    {:ok, vsn} = version_from_git()
+    vsn = version_from_git()
 
     if vsn.pre == [] && System.get_env("FORCE") != "true" do
       flunk("Current commit is already tagged (#{vsn})")

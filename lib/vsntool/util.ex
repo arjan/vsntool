@@ -11,7 +11,7 @@ defmodule Vsntool.Util do
   def branch() do
     case shell("git rev-parse --abbrev-ref HEAD") do
       "HEAD" ->
-        case shell("git log -n 1 --pretty=%d HEAD") |> IO.inspect(label: "x") do
+        case shell("git log -n 1 --pretty=%d HEAD") do
           "(HEAD, " <> comp ->
             components =
               comp
@@ -47,6 +47,8 @@ defmodule Vsntool.Util do
   end
 
   def version_from_git() do
+    hash = shell("git rev-parse --short=6 HEAD")
+
     with {:ok, version} <-
            shell("git describe --tags --abbrev=5")
            |> slugify()
@@ -68,14 +70,14 @@ defmodule Vsntool.Util do
               end
           end
 
-        {:ok, %{version | pre: pre}}
+        %{version | pre: pre}
       else
-        {:ok, version}
+        version
       end
     else
-      _ ->
-        describe = shell("git describe --tags --abbrev=5")
-        {:error, {:invalid_current_version, describe}}
+      :error ->
+        {:ok, version} = Version.parse(File.read!("VERSION"))
+        %{version | pre: ["unknown", hash]}
     end
   end
 
