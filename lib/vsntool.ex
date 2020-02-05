@@ -33,8 +33,8 @@ defmodule Vsntool do
       {:ok, v} ->
         IO.puts(v)
 
-      _ ->
-        IO.puts("*** not a valid git version")
+      e ->
+        IO.puts("*** not a valid git version: " <> inspect(e))
     end
   end
 

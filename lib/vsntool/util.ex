@@ -72,6 +72,10 @@ defmodule Vsntool.Util do
       else
         {:ok, version}
       end
+    else
+      _ ->
+        describe = shell("git describe --tags --abbrev=5")
+        {:error, {:invalid_current_version, describe}}
     end
   end
 
