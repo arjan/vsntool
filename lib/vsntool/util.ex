@@ -11,12 +11,12 @@ defmodule Vsntool.Util do
   def branch() do
     case shell("git rev-parse --abbrev-ref HEAD") do
       "HEAD" ->
-        case shell("git log -n 1 --pretty=%d HEAD") do
-          "(HEAD, tag: " <> b ->
-            Regex.replace(~r/[\s\),].*$/, b, "")
+        case shell("git log -n 1 --pretty=%d HEAD") |> IO.inspect(label: "x") do
+          # "(HEAD, tag: " <> b ->
+          #   Regex.replace(~r/[\s\),].*$/, b, "")
 
-          "(HEAD, " <> b ->
-            Regex.replace(~r/[\s\),].*$/, b, "")
+          # "(HEAD, " <> b ->
+          #   Regex.replace(~r/[\s\),].*$/, b, "")
 
           _ ->
             "HEAD"
@@ -32,35 +32,40 @@ defmodule Vsntool.Util do
     System.halt(1)
   end
 
+  defp slugify(str) do
+    str
+    |> String.replace(vsn_prefix(), "")
+    |> String.replace("_", "-")
+    |> String.replace("/", "-")
+    |> String.replace("HEAD", "")
+  end
+
   def version_from_git() do
-    version =
-      shell("git describe --tags --abbrev=5")
-      |> String.replace(vsn_prefix(), "")
-      |> String.replace("_", "-")
-      |> Version.parse!()
+    with {:ok, version} <-
+           shell("git describe --tags --abbrev=5")
+           |> slugify()
+           |> Version.parse() do
+      br = branch()
 
-    br = branch()
+      if br != vsn_branch() do
+        pre =
+          case Version.parse(br) do
+            {:ok, %Version{pre: pre}} ->
+              pre
 
-    if br != vsn_branch() do
-      pre =
-        case Version.parse(br) do
-          {:ok, %Version{pre: pre}} ->
-            pre
+            _ ->
+              hash = shell("git rev-parse --short=6 HEAD")
 
-          _ ->
-            hash = shell("git rev-parse --short=6 HEAD")
+              case slugify(br) do
+                "" -> [hash]
+                add -> [add, hash]
+              end
+          end
 
-            add =
-              br
-              |> String.replace("_", "-")
-              |> String.replace("/", "-")
-
-            [add, hash]
-        end
-
-      %{version | pre: pre}
-    else
-      version
+        {:ok, %{version | pre: pre}}
+      else
+        {:ok, version}
+      end
     end
   end
 
