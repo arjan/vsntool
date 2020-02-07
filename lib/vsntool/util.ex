@@ -18,6 +18,7 @@ defmodule Vsntool.Util do
               |> String.trim_trailing(")")
               |> String.split(", ")
               |> Enum.reject(&(match?("tag:" <> _, &1) || &1 == vsn_branch()))
+              |> Enum.reject(&match?("refs/" <> _, &1))
 
             case components do
               [first | _] -> first
