@@ -63,6 +63,16 @@ defmodule VsntoolTest do
            end) =~ "1.0.0"
   end
 
+  test "vsntool init w/ specific version" do
+    capture_io(fn ->
+      Vsntool.main(["init", "1.3.0"])
+    end)
+
+    assert capture_io(fn ->
+             Vsntool.main([])
+           end) =~ "1.3.0"
+  end
+
   test "vsntool on git branch" do
     assert capture_io(fn ->
              Vsntool.main(["init"])
@@ -147,5 +157,25 @@ defmodule VsntoolTest do
     Util.shell("git tag -d 0.0.1")
     vsn = Util.version_from_git()
     assert to_string(vsn) =~ "0.0.1-unknown\."
+  end
+
+  test "when current tag is a valid version" do
+    assert capture_io(fn ->
+             Vsntool.main(["init"])
+           end) =~ "Initialized git repository"
+
+    _vsn = Util.version_from_git()
+    File.write!("testfile", "xx1")
+    Util.shell("git add testfile && git commit -am 'test commit'")
+    File.write!("testfile", "xx2")
+    Util.shell("git add testfile && git commit -am 'test commit'")
+
+    tag = Util.version_from_git() |> to_string()
+
+    Util.shell("git tag #{tag}")
+    Util.shell("git checkout #{tag}")
+
+    vsn = Util.version_from_git()
+    assert "0.0.1-" <> _ = to_string(vsn)
   end
 end
