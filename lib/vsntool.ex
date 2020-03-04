@@ -105,9 +105,9 @@ defmodule Vsntool do
     shell("git add VERSION")
 
     Plugin.discover()
-    |> Enum.map(fn mod ->
-      IO.puts("* Using plugin: #{inspect(mod)}")
-      mod.persist_version(vsn)
+    |> Enum.map(fn {plugin, file} ->
+      IO.puts("* plugin: #{inspect(plugin)} → #{file}")
+      plugin.persist_version(vsn, file)
     end)
 
     shell("git commit -m 'Bump version to #{vsn}'")

@@ -1,5 +1,5 @@
 defmodule Vsntool.Plugin.CordovaConfigXmlVersioncode do
-  use Vsntool.RegexPatcher, filename: "config.xml", regex: ~r/versionCode=\"(.*?)\"/
+  use Vsntool.RegexPatcher, file: "config.xml", regex: ~r/versionCode=\"(.*?)\"/
 
   def to_version_string(vsn) do
     to_string(vsn.major) <>

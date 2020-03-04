@@ -1,18 +1,20 @@
 defmodule Vsntool.RegexPatcher do
   defmacro __using__(opts) do
-    filename = opts[:filename]
     regex = opts[:regex]
 
     quote do
       import Vsntool.Util
       import Vsntool.RegexPatcher
 
+      @behaviour Vsntool.Plugin
+
+      @impl true
       def discover() do
-        File.exists?(unquote(filename))
+        Vsntool.Plugin.opt_files(unquote(opts))
       end
 
-      def persist_version(vsn) do
-        filename = unquote(filename)
+      @impl true
+      def persist_version(vsn, filename) do
         contents = File.read!(filename)
         regex = unquote(regex)
         replace = to_version_string(vsn)
