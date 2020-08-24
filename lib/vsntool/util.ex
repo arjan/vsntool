@@ -47,8 +47,17 @@ defmodule Vsntool.Util do
     |> String.replace("HEAD", "")
   end
 
-  def version_from_git() do
+  defp hash() do
     hash = shell("git rev-parse --short=6 HEAD")
+
+    case Regex.match?(~r/^\d+$/, hash) do
+      true -> hash <> "x"
+      false -> hash
+    end
+  end
+
+  def version_from_git() do
+    hash = hash()
 
     with {:ok, version} <-
            shell("git describe --tags --abbrev=5")
@@ -63,8 +72,6 @@ defmodule Vsntool.Util do
               pre
 
             _ ->
-              hash = shell("git rev-parse --short=6 HEAD")
-
               case slugify(br) do
                 "" -> [hash]
                 add -> [add, hash]
