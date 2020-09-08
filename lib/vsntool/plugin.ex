@@ -6,7 +6,8 @@ defmodule Vsntool.Plugin do
     Vsntool.Plugin.PackageJson,
     Vsntool.Plugin.ExpoJson,
     Vsntool.Plugin.CordovaConfigXml,
-    Vsntool.Plugin.CordovaConfigXmlVersioncode
+    Vsntool.Plugin.CordovaConfigXmlVersioncode,
+    Vsntool.Plugin.DockerfileDokku
   ]
 
   def discover() do
