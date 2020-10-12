@@ -6,6 +6,7 @@ defmodule Vsntool.Plugin do
     Vsntool.Plugin.PackageJson,
     Vsntool.Plugin.ExpoJson,
     Vsntool.Plugin.CordovaConfigXml,
+    Vsntool.Plugin.CordovaPluginXml,
     Vsntool.Plugin.CordovaConfigXmlVersioncode,
     Vsntool.Plugin.DockerfileDokku
   ]
