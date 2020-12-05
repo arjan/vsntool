@@ -5,6 +5,7 @@ defmodule Vsntool.Plugin do
   @all [
     Vsntool.Plugin.PackageJson,
     Vsntool.Plugin.ExpoJson,
+    Vsntool.Plugin.ExpoVersioncode,
     Vsntool.Plugin.CordovaConfigXml,
     Vsntool.Plugin.CordovaPluginXml,
     Vsntool.Plugin.CordovaConfigXmlVersioncode,
