@@ -4,6 +4,6 @@ defmodule Vsntool.Plugin.ExpoVersioncode do
   def to_version_string(vsn) do
     to_string(vsn.major) <>
       String.pad_leading(to_string(vsn.minor), 2, "0") <>
-      String.pad_leading(to_string(vsn.patch), 2, "0")
+      String.pad_leading(to_string(vsn.patch), 3, "0")
   end
 end
