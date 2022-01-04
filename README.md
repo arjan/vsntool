@@ -16,7 +16,6 @@ several other auto-detected files in the repository:
 
 By using the `vsntool` commands, the version numbers are automatically patched in these files.
 
-
 ## Installation
 
 Copy the provided `vsntool` binary to somewhere in your path.
@@ -112,13 +111,6 @@ When releasing your library as dependency, do not forget to add the VERSION file
       ...
 ```
 
-### Usage in Javascript projects
-
-Since v1.4, `vsntool` automatically detects the existence of a
-top-level package.json file and injects the version in it whenever it
-changes it in the VERSION file.
-
-
 ### Usage with docker
 
 Build the current project and tag it with the correct version:
@@ -126,6 +118,18 @@ Build the current project and tag it with the correct version:
 ```
 ▶ docker build . -t organisation/projectname:$(vsntool)
 ```
+
+## Plugins
+
+vsntool "knows" about a few common places where version numbers are stored, and
+will detect these automatically, using a plugin system. The currently supported
+and shipped plugins are:
+
+- Support for npm `package.json` files
+- Expo (React Native)'s `app.json`, both version and versionCode
+- Android apps, `build.gradle`, both versionName and versionCode
+- Cordova apps, `config.xml`, both version and versionCode
+- Cordova apps, `plugin.xml`
 
 ## Bash / zsh completion
 
@@ -135,17 +139,15 @@ To enable command completion, add the following to your `~/.zshrc` or `~/.bashrc
 complete -W "init bump_major bump_minor bump_patch last" vsntool
 ```
 
-
 ## Building
 
-vsntool is an Elixir project, but builds as an *escript*, a self-contained binary. To build it, you need to have Elixir installed, then run:
+vsntool is an Elixir project, but builds as an _escript_, a self-contained binary. To build it, you need to have Elixir installed, then run:
 
 ```
 ▶ make
 ```
 
 This produces a fresh version of the `vsntool` binary in the root of the repository. Happy versioning!
-
 
 ## To do
 
