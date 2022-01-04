@@ -9,7 +9,9 @@ defmodule Vsntool.Plugin do
     Vsntool.Plugin.CordovaConfigXml,
     Vsntool.Plugin.CordovaPluginXml,
     Vsntool.Plugin.CordovaConfigXmlVersioncode,
-    Vsntool.Plugin.DockerfileDokku
+    Vsntool.Plugin.DockerfileDokku,
+    Vsntool.Plugin.AndroidBuildGradle,
+    Vsntool.Plugin.AndroidBuildGradleVersioncode
   ]
 
   def discover() do
