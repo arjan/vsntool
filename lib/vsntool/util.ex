@@ -39,11 +39,15 @@ defmodule Vsntool.Util do
     System.halt(1)
   end
 
+  defp slugify("fatal:" <> _) do
+    ""
+  end
+
   defp slugify(str) do
     str
     |> String.replace(vsn_prefix(), "")
-    |> String.replace("_", "-")
-    |> String.replace("/", "-")
+    |> String.replace(~r/[^\.A-Za-z0-9-]/, "-")
+    |> String.replace(~r/-+/, "-")
     |> String.replace("HEAD", "")
   end
 
