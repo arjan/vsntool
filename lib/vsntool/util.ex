@@ -93,6 +93,10 @@ defmodule Vsntool.Util do
     end
   end
 
+  def version_from_file() do
+    Version.parse!(File.read!("VERSION"))
+  end
+
   def bump(:major, v) do
     %Version{v | major: v.major + 1, minor: 0, patch: 0, pre: []}
   end

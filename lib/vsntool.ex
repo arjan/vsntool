@@ -39,7 +39,7 @@ defmodule Vsntool do
       )
     end
 
-    vsn = version_from_git()
+    vsn = version_from_file()
 
     if vsn.pre == [] && System.get_env("FORCE") != "true" do
       flunk("Current commit is already tagged (#{vsn})")
@@ -101,17 +101,23 @@ defmodule Vsntool do
   end
 
   def persist_version(vsn) do
-    File.write!("VERSION", to_string(vsn))
-    shell("git add VERSION")
+    case shell("git tag -l #{vsn}") do
+      "" ->
+        File.write!("VERSION", to_string(vsn))
+        shell("git add VERSION")
 
-    Plugin.discover()
-    |> Enum.map(fn {plugin, file} ->
-      IO.puts("* plugin: #{inspect(plugin)} → #{file}")
-      plugin.persist_version(vsn, file)
-    end)
+        Plugin.discover()
+        |> Enum.map(fn {plugin, file} ->
+          IO.puts("* plugin: #{inspect(plugin)} → #{file}")
+          plugin.persist_version(vsn, file)
+        end)
 
-    shell("git commit -m 'Bump version to #{vsn}'")
-    shell("git tag -a '#{vsn_prefix()}#{vsn}' -m 'Tagged version #{vsn}'")
-    IO.puts("Version bump to #{vsn} OK.")
+        shell("git commit -m 'Bump version to #{vsn}'")
+        shell("git tag -a '#{vsn_prefix()}#{vsn}' -m 'Tagged version #{vsn}'")
+        IO.puts("Version bump to #{vsn} OK.")
+
+      ^vsn ->
+        flunk("There is already a git tag called #{vsn}")
+    end
   end
 end
