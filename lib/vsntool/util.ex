@@ -67,31 +67,35 @@ defmodule Vsntool.Util do
   end
 
   def version_from_git() do
-    hash = hash()
-
-    with {:ok, version} <-
-           shell("git describe --tags --abbrev=5")
-           |> slugify()
-           |> Version.parse() do
-      br = branch()
-
-      pre =
-        case Version.parse(br) do
-          {:ok, %Version{pre: pre}} ->
-            pre
-
-          _ ->
-            case slugify(br) do
-              "" -> [hash]
-              add -> [add, hash]
-            end
-        end
-
-      %{version | pre: pre}
+    if on_last_release() do
+      version_from_file()
     else
-      :error ->
-        {:ok, version} = Version.parse(File.read!("VERSION"))
-        %{version | pre: ["unknown", hash]}
+      hash = hash()
+
+      with {:ok, version} <-
+             shell("git describe --tags --abbrev=5")
+             |> slugify()
+             |> Version.parse() do
+        br = branch()
+
+        pre =
+          case Version.parse(br) do
+            {:ok, %Version{pre: pre}} ->
+              pre
+
+            _ ->
+              case slugify(br) do
+                "" -> [hash]
+                add -> [add, hash]
+              end
+          end
+
+        %{version | pre: pre}
+      else
+        :error ->
+          {:ok, version} = Version.parse(File.read!("VERSION"))
+          %{version | pre: ["unknown", hash]}
+      end
     end
   end
 
@@ -109,5 +113,16 @@ defmodule Vsntool.Util do
 
   def bump(:patch, v) do
     %Version{v | patch: v.patch + 1, pre: []}
+  end
+
+  defp on_last_release() do
+    vsn = version_from_file() |> to_string()
+    gitcmd = "git log -n 1 --pretty=format:'%H' "
+
+    #    IO.inspect(vsn, label: "vsn")
+    #    IO.puts(shell(gitcmd <> vsn))
+    #    IO.puts(shell(gitcmd))
+
+    branch() in vsn_branches() && shell(gitcmd <> "HEAD") == shell(gitcmd <> vsn)
   end
 end

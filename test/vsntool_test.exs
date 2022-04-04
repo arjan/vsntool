@@ -44,6 +44,10 @@ defmodule VsntoolTest do
              Vsntool.main(["last"])
            end) =~ "0.0.1"
 
+    assert capture_io(fn ->
+             Vsntool.main(["current"])
+           end) == "0.0.1\n"
+
     File.write!("text.txt", "a")
     System.shell("git commit -am test")
 
