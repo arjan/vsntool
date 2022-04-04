@@ -9,6 +9,7 @@ defmodule Vsntool do
     "bm" => "bump_major",
     "bi" => "bump_minor",
     "bp" => "bump_patch",
+    "c" => "current",
     "l" => "last",
     "h" => "help",
     "v" => "--version"
@@ -16,7 +17,7 @@ defmodule Vsntool do
   @shortcuts Map.keys(@options)
   @commands Map.values(@options)
 
-  def main([]), do: execute("current_version")
+  def main([]), do: execute("current")
 
   def main([command | _] = all) when command in @commands do
     apply(__MODULE__, :execute, all)
@@ -28,20 +29,21 @@ defmodule Vsntool do
 
   def main(_), do: execute("usage")
 
-  def execute("current_version") do
+  def execute("current") do
     IO.puts(version_from_git())
   end
 
   def execute("bump_" <> kind) when kind in ~w(major minor patch) do
-    if branch() != vsn_branch() do
+    if branch() not in vsn_branches() do
       flunk(
-        "You need to be on branch #{vsn_branch()} to bump versions (currently on #{branch()})"
+        "You need to be on branch #{Enum.join(vsn_branches(), " or ")} to bump versions (currently on #{branch()})"
       )
     end
 
     vsn = version_from_file()
+    git_vsn = version_from_git()
 
-    if vsn.pre == [] && System.get_env("FORCE") != "true" do
+    if vsn == git_vsn && System.get_env("FORCE") != "true" do
       flunk("Current commit is already tagged (#{vsn})")
     end
 
@@ -75,7 +77,8 @@ defmodule Vsntool do
       bm, bump_major  Bump major version
       bi, bump_minor  Bump minor version
       bp, bump_patch  Bump patch version
-      l,  last        Display last version
+      c,  current     Current version
+      l,  last        Last released version
       h,  help        Display this help
       v,  --version   Display vsntool version
     """
@@ -84,7 +87,7 @@ defmodule Vsntool do
   end
 
   def execute("usage") do
-    flunk("Usage: vsntool (init|bump_major|bump_minor|bump_patch|help)")
+    flunk("Usage: vsntool (init|bump_major|bump_minor|bump_patch|current|last|help)")
   end
 
   def execute("init", initial_version) do

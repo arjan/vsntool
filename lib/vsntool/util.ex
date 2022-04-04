@@ -1,5 +1,11 @@
 defmodule Vsntool.Util do
-  def vsn_branch(), do: System.get_env("VSN_BRANCH") || "master"
+  def vsn_branches() do
+    case System.get_env("VSN_BRANCH") do
+      nil -> ["main", "master"]
+      branch -> [branch]
+    end
+  end
+
   def vsn_prefix(), do: System.get_env("VSN_PREFIX") || ""
 
   def shell(cmd) do
@@ -17,7 +23,7 @@ defmodule Vsntool.Util do
               comp
               |> String.trim_trailing(")")
               |> String.split(", ")
-              |> Enum.reject(&(match?("tag:" <> _, &1) || &1 == vsn_branch()))
+              |> Enum.reject(&(match?("tag:" <> _, &1) || &1 in vsn_branches()))
               |> Enum.reject(&match?("refs/" <> _, &1))
 
             case components do
@@ -69,23 +75,19 @@ defmodule Vsntool.Util do
            |> Version.parse() do
       br = branch()
 
-      if br != vsn_branch() do
-        pre =
-          case Version.parse(br) do
-            {:ok, %Version{pre: pre}} ->
-              pre
+      pre =
+        case Version.parse(br) do
+          {:ok, %Version{pre: pre}} ->
+            pre
 
-            _ ->
-              case slugify(br) do
-                "" -> [hash]
-                add -> [add, hash]
-              end
-          end
+          _ ->
+            case slugify(br) do
+              "" -> [hash]
+              add -> [add, hash]
+            end
+        end
 
-        %{version | pre: pre}
-      else
-        version
-      end
+      %{version | pre: pre}
     else
       :error ->
         {:ok, version} = Version.parse(File.read!("VERSION"))

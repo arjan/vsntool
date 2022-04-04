@@ -44,7 +44,12 @@ defmodule VsntoolTest do
              Vsntool.main(["last"])
            end) =~ "0.0.1"
 
-    System.put_env("FORCE", "true")
+    File.write!("text.txt", "a")
+    System.shell("git commit -am test")
+
+    assert capture_io(fn ->
+             Vsntool.main(["current"])
+           end) =~ "0.0.1-master."
 
     assert capture_io(fn ->
              Vsntool.main(["bump_patch"])
@@ -52,7 +57,7 @@ defmodule VsntoolTest do
 
     assert capture_io(fn ->
              Vsntool.main(["last"])
-           end) =~ "0.0.2"
+           end) == "0.0.2\n"
 
     assert capture_io(fn ->
              Vsntool.main(["bump_minor"])
@@ -102,7 +107,7 @@ defmodule VsntoolTest do
 
     assert capture_io(fn ->
              Vsntool.main([])
-           end) =~ ~r/0\.0\.1-.{6}$/
+           end) =~ ~r/0\.0\.1-.{6,7}$/
   end
 
   test "vsntool on git branch with random tag added" do
