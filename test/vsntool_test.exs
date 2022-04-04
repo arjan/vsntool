@@ -48,8 +48,9 @@ defmodule VsntoolTest do
              Vsntool.main(["current"])
            end) == "0.0.1\n"
 
-    File.write!("text.txt", "a")
-    System.shell("git commit -am test")
+    File.write!("test.txt", "a")
+    System.shell("git add test.txt")
+    System.shell("git commit -m test")
 
     assert capture_io(fn ->
              Vsntool.main(["current"])
@@ -62,6 +63,8 @@ defmodule VsntoolTest do
     assert capture_io(fn ->
              Vsntool.main(["last"])
            end) == "0.0.2\n"
+
+    System.put_env("FORCE", "true")
 
     assert capture_io(fn ->
              Vsntool.main(["bump_minor"])
