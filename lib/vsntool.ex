@@ -52,7 +52,7 @@ defmodule Vsntool do
   end
 
   def execute("init") do
-    execute("init", "0.0.1")
+    execute("init", System.get_env("VERSION", "0.0.1"))
   end
 
   def execute("last") do

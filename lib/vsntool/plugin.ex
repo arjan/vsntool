@@ -10,6 +10,7 @@ defmodule Vsntool.Plugin do
     Vsntool.Plugin.CordovaPluginXml,
     Vsntool.Plugin.CordovaConfigXmlVersioncode,
     Vsntool.Plugin.DockerfileDokku,
+    Vsntool.Plugin.ErlangAppSrc,
     Vsntool.Plugin.AndroidBuildGradle,
     Vsntool.Plugin.AndroidBuildGradleVersioncode
   ]
