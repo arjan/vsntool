@@ -9,6 +9,7 @@ defmodule Vsntool do
     "bm" => "bump_major",
     "bi" => "bump_minor",
     "bp" => "bump_patch",
+    "bd" => "bump_dev",
     "c" => "current",
     "l" => "last",
     "h" => "help",
@@ -33,7 +34,7 @@ defmodule Vsntool do
     IO.puts(version_from_git())
   end
 
-  def execute("bump_" <> kind) when kind in ~w(major minor patch) do
+  def execute("bump_" <> kind) when kind in ~w(major minor patch dev) do
     if branch() not in vsn_branches() do
       flunk(
         "You need to be on branch #{Enum.join(vsn_branches(), " or ")} to bump versions (currently on #{branch()})"
@@ -77,6 +78,7 @@ defmodule Vsntool do
       bm, bump_major  Bump major version
       bi, bump_minor  Bump minor version
       bp, bump_patch  Bump patch version
+      bd, bump_dev    Bump minor with -dev prefix
       c,  current     Current version
       l,  last        Last released version
       h,  help        Display this help

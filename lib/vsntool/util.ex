@@ -115,6 +115,10 @@ defmodule Vsntool.Util do
     %Version{v | patch: v.patch + 1, pre: []}
   end
 
+  def bump(:dev, v) do
+    %Version{v | minor: v.minor + 1, patch: 0, pre: ["dev"]}
+  end
+
   defp on_last_release() do
     vsn = version_from_file() |> to_string()
     gitcmd = "git log -n 1 --pretty=format:'%H' "

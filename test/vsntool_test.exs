@@ -85,6 +85,18 @@ defmodule VsntoolTest do
            end) =~ "1.3.0"
   end
 
+  test "bump_dev" do
+    capture_io(fn ->
+      Vsntool.main(["init", "1.3.0"])
+    end)
+
+    System.put_env("FORCE", "true")
+
+    assert capture_io(fn ->
+             Vsntool.main(["bump_dev"])
+           end) =~ "1.4.0-dev"
+  end
+
   test "vsntool on git branch" do
     assert capture_io(fn ->
              Vsntool.main(["init"])
