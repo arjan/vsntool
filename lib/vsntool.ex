@@ -145,7 +145,7 @@ defmodule Vsntool do
 
         shell("git commit -m 'Bump version to #{vsn}'")
 
-        if vsn.pre == [] do
+        if vsn.pre != ["dev"] do
           shell("git tag -a '#{vsn_prefix()}#{vsn}' -m 'Tagged version #{vsn}'")
         end
 

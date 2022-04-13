@@ -116,7 +116,7 @@ defmodule VsntoolTest do
            end) =~ "2.0.0-rc.0"
 
     # no tag on dev versions
-    assert ["1.3.0"] == Util.shell("git tag -l") |> String.split("\n")
+    assert ["1.3.0", "2.0.0-rc.0"] == Util.shell("git tag -l") |> String.split("\n")
 
     assert capture_io(fn -> Vsntool.main(["bump_rc"]) end) =~ "2.0.0-rc.1"
     assert capture_io(fn -> Vsntool.main(["bump_rc"]) end) =~ "2.0.0-rc.2"
