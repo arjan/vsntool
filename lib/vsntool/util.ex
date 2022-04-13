@@ -115,8 +115,12 @@ defmodule Vsntool.Util do
     %Version{v | patch: v.patch + 1, pre: []}
   end
 
-  def bump(:dev, v) do
-    %Version{v | minor: v.minor + 1, patch: 0, pre: ["dev"]}
+  def rc_number(%Version{pre: ["rc", n]}) when is_integer(n) do
+    n
+  end
+
+  def rc_number(_) do
+    nil
   end
 
   defp on_last_release() do

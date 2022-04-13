@@ -93,10 +93,37 @@ defmodule VsntoolTest do
     System.put_env("FORCE", "true")
 
     assert capture_io(fn ->
-             Vsntool.main(["bump_dev"])
+             Vsntool.main(["bump_minor", "--dev"])
            end) =~ "1.4.0-dev"
 
+    # no tag on dev versions
     assert ["1.3.0"] == Util.shell("git tag -l") |> String.split("\n")
+
+    assert capture_io(fn ->
+             Vsntool.main(["release"])
+           end) == "Version bump to 1.4.0 OK.\n"
+  end
+
+  test "bump rc" do
+    capture_io(fn ->
+      Vsntool.main(["init", "1.3.0"])
+    end)
+
+    System.put_env("FORCE", "true")
+
+    assert capture_io(fn ->
+             Vsntool.main(["bump_major", "--rc"])
+           end) =~ "2.0.0-rc.0"
+
+    # no tag on dev versions
+    assert ["1.3.0"] == Util.shell("git tag -l") |> String.split("\n")
+
+    assert capture_io(fn -> Vsntool.main(["bump_rc"]) end) =~ "2.0.0-rc.1"
+    assert capture_io(fn -> Vsntool.main(["bump_rc"]) end) =~ "2.0.0-rc.2"
+
+    assert capture_io(fn ->
+             Vsntool.main(["release"])
+           end) == "Version bump to 2.0.0 OK.\n"
   end
 
   test "vsntool on git branch" do
