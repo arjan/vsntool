@@ -186,8 +186,10 @@ vsntool is an Elixir project, but builds as an _escript_, a self-contained binar
 
 This produces a fresh version of the `vsntool` binary in the root of the repository. Happy versioning!
 
-## To do
+## Features / todo list
 
-- Add support for release-candidate-like versions (1.0.0-rc1)
-- Improve error reporting, error messages (stop using `:os.cmd`)
-- Use [artificery](https://github.com/bitwalker/artificery) for command parsing
+- [x] Plugin system for updating version in framework-specific files
+- [x] Add support for dev versions (1.0.0-dev)
+- [x] Add support for release-candidate-like versions (1.0.0-rc1)
+- [ ] Improve error reporting, error messages (stop using `:os.cmd`)
+- [ ] Use [artificery](https://github.com/bitwalker/artificery) for command parsing
