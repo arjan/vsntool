@@ -126,6 +126,16 @@ defmodule VsntoolTest do
            end) == "Version bump to 2.0.0 OK.\n"
   end
 
+  test "bump_dev to RC" do
+    System.put_env("FORCE", "true")
+
+    capture_io(fn ->
+      Vsntool.main(["init", "1.3.0-dev"])
+    end)
+
+    assert capture_io(fn -> Vsntool.main(["bump_rc"]) end) =~ "1.3.0-rc.0"
+  end
+
   test "vsntool on git branch" do
     assert capture_io(fn ->
              Vsntool.main(["init"])

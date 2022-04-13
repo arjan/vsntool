@@ -45,7 +45,7 @@ To retrieve the last released version, run:
 (which is equivalent to `cat VERSION`).
 
 The default branch on which the releases are being tagged is
-`master`. To change this, change the environment variable
+`master` or `main`. To change this, change the environment variable
 `VSN_BRANCH`.
 
 When vsntool is run on a non-release branch, the branch name is added
@@ -86,7 +86,42 @@ Note that vsntool will refuse to tag a commit twice:
 Current commit is already tagged (0.1.2)
 ```
 
-To release a new version, do another commit before doing another version bump.
+To release a new version, do another commit before doing another version bump,
+or use the `FORCE=true` environment variable to force the version.
+
+### Dev version workflow
+
+Usually after a release you want to set the current project version to a `dev`
+prefix to indicate that this is the current working version. You do this by
+specifying `--dev` as a flag:
+
+```
+▶ vsntool bump_minor --dev
+Version bump to 0.1.0-dev OK.
+```
+
+> A `--dev` bump will **not** create a git tag.
+
+Once you are happy with your project, bump it to a release candidate:
+
+```
+▶ vsntool bump_rc
+Version bump to 0.1.0-rc.0 OK.
+```
+
+And create as many release candidates after that as you want:
+
+```
+▶ vsntool bump_rc
+Version bump to 0.1.0-rc.1 OK.
+```
+
+To promote an `dev` or `rc` version to a release, call `vsntool release`:
+
+```
+▶ vsntool release
+Version bump to 0.1.0 OK.
+```
 
 ### Usage in Elixir projects
 

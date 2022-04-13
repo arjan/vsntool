@@ -63,13 +63,22 @@ defmodule Vsntool do
     assert_release_branch()
     vsn = version_from_file()
 
-    n = rc_number(vsn)
+    pre =
+      case vsn.pre do
+        ["dev"] ->
+          ["rc", 0]
 
-    if n == nil do
-      flunk("Need to be on a RC version number to bump, currently on #{vsn}")
-    end
+        _other ->
+          n = rc_number(vsn)
 
-    persist_version(%{vsn | pre: ["rc", n + 1]})
+          if n == nil do
+            flunk("Need to be on a RC version number to bump, currently on #{vsn}")
+          end
+
+          ["rc", n + 1]
+      end
+
+    persist_version(%{vsn | pre: pre})
   end
 
   def execute("release", []) do
