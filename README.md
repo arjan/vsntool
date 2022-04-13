@@ -89,7 +89,7 @@ Current commit is already tagged (0.1.2)
 To release a new version, do another commit before doing another version bump,
 or use the `FORCE=true` environment variable to force the version.
 
-### Dev version workflow
+### Development versions / Release candidates workflow
 
 Usually after a release you want to set the current project version to a `dev`
 prefix to indicate that this is the current working version. You do this by
