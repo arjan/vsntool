@@ -118,7 +118,11 @@ defmodule Vsntool do
         end)
 
         shell("git commit -m 'Bump version to #{vsn}'")
-        shell("git tag -a '#{vsn_prefix()}#{vsn}' -m 'Tagged version #{vsn}'")
+
+        if vsn.pre != ["dev"] do
+          shell("git tag -a '#{vsn_prefix()}#{vsn}' -m 'Tagged version #{vsn}'")
+        end
+
         IO.puts("Version bump to #{vsn} OK.")
 
       ^vsn ->

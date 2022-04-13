@@ -95,6 +95,8 @@ defmodule VsntoolTest do
     assert capture_io(fn ->
              Vsntool.main(["bump_dev"])
            end) =~ "1.4.0-dev"
+
+    assert ["1.3.0"] == Util.shell("git tag -l") |> String.split("\n")
   end
 
   test "vsntool on git branch" do
