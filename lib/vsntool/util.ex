@@ -1,7 +1,7 @@
 defmodule Vsntool.Util do
   def vsn_branches() do
     case System.get_env("VSN_BRANCH") do
-      nil -> ["main", "master"]
+      nil -> ["main", "master", "rc"]
       branch -> [branch]
     end
   end
