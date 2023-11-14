@@ -1,14 +1,19 @@
 defmodule Vsntool.MixProject do
   use Mix.Project
 
+  @source_url "https://github.com/arjan/vsntool"
+  @version File.read!("VERSION")
+
   def project do
     [
       app: :vsntool,
-      version: File.read!("VERSION"),
+      version: @version,
       elixir: "~> 1.6",
+      build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       escript: [main_module: Vsntool],
-      deps: deps()
+      deps: deps(),
+      package: package()
     ]
   end
 
@@ -23,6 +28,16 @@ defmodule Vsntool.MixProject do
   defp deps do
     [
       {:jason, "~> 1.0"}
+    ]
+  end
+
+  defp package do
+    [
+      description: "Lean-and-mean version bumping tool",
+      files: ["lib", "mix.exs", "*.md", "LICENSE", "VERSION"],
+      maintainers: ["Arjan Scherpenisse"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => @source_url}
     ]
   end
 end
