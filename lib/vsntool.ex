@@ -21,17 +21,25 @@ defmodule Vsntool do
 
   @kinds ~w(major minor patch)
 
-  def main([]), do: execute("current", [])
-
-  def main([command | args]) when command in @commands do
-    apply(__MODULE__, :execute, [command, args])
+  def main(args) do
+    execute(args)
+  rescue
+    e in Vsntool.Flunk ->
+      IO.write(:stderr, Exception.message(e) <> "\n")
+      System.halt(1)
   end
 
-  def main([shortcut | rest]) when shortcut in @shortcuts do
-    main([@options[shortcut] | rest])
+  def execute([]), do: execute("current", [])
+
+  def execute([command | args]) when command in @commands do
+    execute(command, args)
   end
 
-  def main(_), do: execute("usage", [])
+  def execute([shortcut | rest]) when shortcut in @shortcuts do
+    execute([@options[shortcut] | rest])
+  end
+
+  def execute(_), do: execute("usage", [])
 
   def execute("current", []) do
     IO.puts(version_from_git())
@@ -173,6 +181,10 @@ defmodule Vsntool do
 
     if vsn == git_vsn && System.get_env("FORCE") != "true" do
       flunk("Current commit is already tagged (#{vsn})")
+    end
+
+    if vsn.pre != [] do
+      flunk("Cannot bump when on prerelease (#{vsn})")
     end
 
     version = bump(String.to_atom(kind), vsn)

@@ -1,3 +1,7 @@
+defmodule Vsntool.Flunk do
+  defexception [:message]
+end
+
 defmodule Vsntool.Util do
   def vsn_branches() do
     case System.get_env("VSN_BRANCH") do
@@ -41,8 +45,7 @@ defmodule Vsntool.Util do
   end
 
   def flunk(message) do
-    IO.write(:stderr, message <> "\n")
-    System.halt(1)
+    raise Vsntool.Flunk, message
   end
 
   defp slugify("fatal:" <> _) do

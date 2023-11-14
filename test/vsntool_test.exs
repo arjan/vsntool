@@ -12,6 +12,8 @@ defmodule VsntoolTest do
     File.mkdir!(path)
     File.cd!(path)
 
+    System.put_env("FORCE", "true")
+
     on_exit(fn ->
       File.rm_rf!(path)
     end)
@@ -52,9 +54,11 @@ defmodule VsntoolTest do
     System.shell("git add test.txt")
     System.shell("git commit -m test")
 
+    assert ["* main"] == Util.shell("git branch -l") |> String.split("\n")
+
     assert capture_io(fn ->
              Vsntool.main(["current"])
-           end) =~ "0.0.1-master."
+           end) =~ "0.0.1-main."
 
     assert capture_io(fn ->
              Vsntool.main(["bump_patch"])
@@ -63,8 +67,6 @@ defmodule VsntoolTest do
     assert capture_io(fn ->
              Vsntool.main(["last"])
            end) == "0.0.2\n"
-
-    System.put_env("FORCE", "true")
 
     assert capture_io(fn ->
              Vsntool.main(["bump_minor"])
@@ -90,8 +92,6 @@ defmodule VsntoolTest do
       Vsntool.main(["init", "1.3.0"])
     end)
 
-    System.put_env("FORCE", "true")
-
     assert capture_io(fn ->
              Vsntool.main(["bump_minor", "--dev"])
            end) =~ "1.4.0-dev"
@@ -109,8 +109,6 @@ defmodule VsntoolTest do
       Vsntool.main(["init", "1.3.0"])
     end)
 
-    System.put_env("FORCE", "true")
-
     assert capture_io(fn ->
              Vsntool.main(["bump_major", "--rc"])
            end) =~ "2.0.0-rc.0"
@@ -127,13 +125,26 @@ defmodule VsntoolTest do
   end
 
   test "bump_dev to RC" do
-    System.put_env("FORCE", "true")
-
     capture_io(fn ->
       Vsntool.main(["init", "1.3.0-dev"])
     end)
 
     assert capture_io(fn -> Vsntool.main(["bump_rc"]) end) =~ "1.3.0-rc.0"
+  end
+
+  test "cannot bump other versions when in rc" do
+    capture_io(fn ->
+      Vsntool.main(["init", "1.3.0"])
+    end)
+
+    assert capture_io(fn ->
+             Vsntool.main(["bump_major", "--rc"])
+           end) =~ "2.0.0-rc.0"
+
+    # no tag on dev versions
+    assert ["1.3.0", "2.0.0-rc.0"] == Util.shell("git tag -l") |> String.split("\n")
+
+    assert assert_raise Vsntool.Flunk, fn -> Vsntool.execute(["bump_patch"]) end
   end
 
   test "vsntool on git branch" do
