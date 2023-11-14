@@ -20,7 +20,11 @@ By using the `vsntool` commands, the version numbers are automatically patched i
 
 ## Installation
 
-Copy the provided `vsntool` binary to somewhere in your path.
+Install [Elixir](https://elixir-lang.org/install.html), then execute the following in a terminal:
+
+```bash
+mix escript.install hex vsntool
+```
 
 ## Usage
 
