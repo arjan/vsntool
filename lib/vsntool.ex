@@ -160,7 +160,9 @@ defmodule Vsntool do
           plugin.persist_version(vsn, file)
         end)
 
-        shell("git commit -m 'Bump version to #{vsn}'")
+        call_hook("pre_persist", [to_string(vsn)])
+
+        shell("git commit -n -m 'Bump version to #{vsn}'")
 
         if vsn.pre != ["dev"] do
           shell("git tag -a '#{vsn_prefix()}#{vsn}' -m 'Tagged version #{vsn}'")
@@ -198,6 +200,19 @@ defmodule Vsntool do
       flunk(
         "You need to be on branch #{Enum.join(vsn_branches(), " or ")} to bump versions (currently on #{branch()})"
       )
+    end
+  end
+
+  defp call_hook(name, args) do
+    hookfile = Path.join([File.cwd!(), ".vsntool/hooks", name])
+
+    if File.exists?(hookfile) do
+      {output, exitcode} = System.cmd(hookfile, args)
+      IO.puts(output)
+
+      if exitcode != 0 do
+        flunk("#{name} hook exited")
+      end
     end
   end
 end

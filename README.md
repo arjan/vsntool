@@ -172,6 +172,12 @@ and shipped plugins are:
 - Cordova apps, `config.xml`, both version and versionCode
 - Cordova apps, `plugin.xml`
 
+## Hooks
+
+To execute code just before a version bump, you can create a file called
+`.vsntool/hooks/pre_persist`, which gets called with a single argument, the
+version that is going to be bumped.
+
 ## Bash / zsh completion
 
 To enable command completion, add the following to your `~/.zshrc` or `~/.bashrc`:

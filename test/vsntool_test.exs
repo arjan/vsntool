@@ -252,4 +252,46 @@ defmodule VsntoolTest do
     vsn = Util.version_from_git()
     assert "0.0.1-" <> _ = to_string(vsn)
   end
+
+  describe "pre-persist hook" do
+    test "OK case" do
+      hookfile = ".vsntool/hooks/pre_persist"
+      File.mkdir_p!(Path.dirname(hookfile))
+
+      File.write!(hookfile, """
+      #!/bin/bash
+
+      echo "version = $1"
+      exit 0
+      """)
+
+      File.chmod!(hookfile, 0o755)
+
+      capture_io(fn ->
+        Vsntool.main(["init", "1.3.0"])
+      end)
+
+      assert capture_io(fn -> Vsntool.main(["last"]) end) =~ "1.3.0"
+    end
+
+    test "error case" do
+      hookfile = ".vsntool/hooks/pre_persist"
+      File.mkdir_p!(Path.dirname(hookfile))
+
+      File.write!(hookfile, """
+      #!/bin/bash
+
+      echo "Hello $1"
+      exit 1
+      """)
+
+      File.chmod!(hookfile, 0o755)
+
+      assert_raise Vsntool.Flunk, ~r/pre_persist hook exited/, fn ->
+        capture_io(fn ->
+          Vsntool.execute(["init", "1.3.0"])
+        end)
+      end
+    end
+  end
 end
