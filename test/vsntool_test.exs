@@ -287,11 +287,11 @@ defmodule VsntoolTest do
 
       File.chmod!(hookfile, 0o755)
 
-      assert_raise Vsntool.Flunk, ~r/pre_persist hook exited/, fn ->
-        capture_io(fn ->
-          Vsntool.execute(["init", "1.3.0"])
-        end)
-      end
+      assert capture_io(fn ->
+               assert_raise Vsntool.Flunk, ~r/pre_persist hook exited/, fn ->
+                 Vsntool.execute(["init", "1.3.0"])
+               end
+             end) =~ ~r/Hello/
     end
   end
 end
