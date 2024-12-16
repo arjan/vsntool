@@ -152,7 +152,6 @@ defmodule Vsntool do
     case shell("git tag -l #{vsn}") do
       "" ->
         File.write!("VERSION", to_string(vsn))
-        shell("git add VERSION")
 
         Plugin.discover()
         |> Enum.map(fn {plugin, file} ->
@@ -162,6 +161,7 @@ defmodule Vsntool do
 
         call_hook("pre_persist", [to_string(vsn)])
 
+        shell("git add VERSION")
         shell("git commit -n -m 'Bump version to #{vsn}'")
 
         if vsn.pre != ["dev"] do
