@@ -151,6 +151,8 @@ defmodule Vsntool do
   def persist_version(vsn) do
     case shell("git tag -l #{vsn}") do
       "" ->
+        call_hook("pre_persist", [to_string(vsn)])
+
         File.write!("VERSION", to_string(vsn))
 
         Plugin.discover()
@@ -158,8 +160,6 @@ defmodule Vsntool do
           IO.puts("* plugin: #{inspect(plugin)} → #{file}")
           plugin.persist_version(vsn, file)
         end)
-
-        call_hook("pre_persist", [to_string(vsn)])
 
         shell("git add VERSION")
         shell("git commit -n -m 'Bump version to #{vsn}'")
