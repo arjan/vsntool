@@ -211,7 +211,7 @@ defmodule Vsntool do
       IO.puts(output)
 
       if exitcode != 0 do
-        flunk("#{name} hook exited")
+        flunk("#{name} hook exited with code #{exitcode}")
       end
     end
   end
