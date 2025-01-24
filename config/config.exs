@@ -1,1 +1,3 @@
-import Mix.Config
+import Config
+
+config :porcelain, driver: Porcelain.Driver.Basic
