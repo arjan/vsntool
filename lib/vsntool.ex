@@ -207,8 +207,7 @@ defmodule Vsntool do
     hookfile = Path.join([File.cwd!(), ".vsntool/hooks", name])
 
     if File.exists?(hookfile) do
-      stream = IO.binstream(:standard_io, :line)
-      %{status: exitcode} = Porcelain.exec(hookfile, args, out: stream)
+      {_, exitcode} = System.cmd(hookfile, args, into: IO.stream())
 
       if exitcode != 0 do
         flunk("#{name} hook exited with code #{exitcode}")
