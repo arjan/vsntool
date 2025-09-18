@@ -153,7 +153,7 @@ defmodule Vsntool do
       "" ->
         call_hook("pre_persist", [to_string(vsn)])
 
-        File.write!("VERSION", to_string(vsn))
+        File.write!("VERSION", to_string(vsn) <> "\n")
 
         Plugin.discover()
         |> Enum.map(fn {plugin, file} ->
