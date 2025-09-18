@@ -96,14 +96,14 @@ defmodule Vsntool.Util do
         %{version | pre: pre}
       else
         :error ->
-          {:ok, version} = Version.parse(File.read!("VERSION"))
+          {:ok, version} = Version.parse(File.read!("VERSION") |> String.trim())
           %{version | pre: ["unknown", hash]}
       end
     end
   end
 
   def version_from_file() do
-    Version.parse!(File.read!("VERSION"))
+    Version.parse!(File.read!("VERSION") |> String.trim())
   end
 
   def bump(:major, v) do
