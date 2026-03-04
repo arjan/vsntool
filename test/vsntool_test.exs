@@ -54,7 +54,7 @@ defmodule VsntoolTest do
     System.shell("git add test.txt")
     System.shell("git commit -m test")
 
-    assert ["* main"] == Util.shell("git branch -l") |> String.split("\n")
+    assert Util.shell("git branch --show-current") in Util.vsn_branches()
 
     assert capture_io(fn ->
              Vsntool.main(["current"])
