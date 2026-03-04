@@ -28,7 +28,7 @@ defmodule VsntoolTest do
   end
 
   test "vsntool last" do
-    assert capture_io(fn ->
+    assert capture_io(:stderr, fn ->
              Vsntool.main(["last"])
            end) =~ "VERSION file missing"
   end
@@ -98,6 +98,12 @@ defmodule VsntoolTest do
 
     # no tag on dev versions
     assert ["1.3.0"] == Util.shell("git tag -l") |> String.split("\n")
+
+    # current version is now a hash
+    assert capture_io(fn ->
+             Vsntool.main(["current"])
+           end)
+           |> String.trim() =~ ~r/1\.4\.0-[a-f0-9]{8}$/
 
     assert capture_io(fn ->
              Vsntool.main(["release"])
@@ -176,7 +182,8 @@ defmodule VsntoolTest do
 
     assert capture_io(fn ->
              Vsntool.main([])
-           end) =~ ~r/0\.0\.1-.{6,7}$/
+           end)
+           |> String.trim() =~ ~r/0\.0\.1-[a-f0-9]{8}$/
   end
 
   test "vsntool on git branch with random tag added" do

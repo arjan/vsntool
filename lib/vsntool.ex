@@ -21,12 +21,17 @@ defmodule Vsntool do
 
   @kinds ~w(major minor patch)
 
+  @env Mix.env()
+
   def main(args) do
     execute(args)
   rescue
     e in Vsntool.Flunk ->
       IO.write(:stderr, Exception.message(e) <> "\n")
-      System.halt(1)
+
+      if @env != :test do
+        System.halt(1)
+      end
   end
 
   def execute([]), do: execute("current", [])
@@ -42,7 +47,16 @@ defmodule Vsntool do
   def execute(_), do: execute("usage", [])
 
   def execute("current", []) do
-    IO.puts(version_from_git())
+    vsn =
+      case version_from_file!() do
+        %{pre: ["dev"]} = vsn ->
+          %{vsn | pre: [hash()]}
+
+        _ ->
+          version_from_git()
+      end
+
+    IO.puts(vsn)
   end
 
   def execute("bump_" <> kind, ["--dev"]) when kind in @kinds do
@@ -58,18 +72,12 @@ defmodule Vsntool do
   end
 
   def execute("last", []) do
-    case File.read("VERSION") do
-      {:ok, vsn} ->
-        IO.puts(vsn)
-
-      _ ->
-        IO.puts("*** VERSION file missing")
-    end
+    IO.puts(version_from_file!())
   end
 
   def execute("bump_rc", []) do
     assert_release_branch()
-    vsn = version_from_file()
+    vsn = version_from_file!()
 
     pre =
       case vsn.pre do
@@ -91,7 +99,7 @@ defmodule Vsntool do
 
   def execute("release", []) do
     assert_release_branch()
-    vsn = version_from_file()
+    vsn = version_from_file!()
 
     if vsn.pre == [] do
       flunk("Not on a pre-release: #{vsn}")
@@ -178,7 +186,7 @@ defmodule Vsntool do
   defp do_bump(kind, pre) do
     assert_release_branch()
 
-    vsn = version_from_file()
+    vsn = version_from_file!()
     git_vsn = version_from_git()
 
     if vsn == git_vsn && System.get_env("FORCE") != "true" do

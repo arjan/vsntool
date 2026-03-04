@@ -60,8 +60,9 @@ defmodule Vsntool.Util do
     |> String.replace("HEAD", "")
   end
 
-  defp hash() do
-    hash = shell("git rev-parse --short=6 HEAD")
+  def hash() do
+    # align to CI_COMMIT_SHORT_SHA
+    hash = shell("git rev-parse --short=8 HEAD")
 
     case Regex.match?(~r/^\d+$/, hash) do
       true -> hash <> "x"
@@ -71,7 +72,7 @@ defmodule Vsntool.Util do
 
   def version_from_git() do
     if on_last_release() do
-      version_from_file()
+      version_from_file!()
     else
       hash = hash()
 
@@ -102,8 +103,11 @@ defmodule Vsntool.Util do
     end
   end
 
-  def version_from_file() do
+  def version_from_file!() do
     Version.parse!(File.read!("VERSION") |> String.trim())
+  rescue
+    _ ->
+      flunk("*** VERSION file missing or corrupt")
   end
 
   def bump(:major, v) do
@@ -127,7 +131,7 @@ defmodule Vsntool.Util do
   end
 
   defp on_last_release() do
-    vsn = version_from_file() |> to_string()
+    vsn = version_from_file!() |> to_string()
     gitcmd = "git log -n 1 --pretty=format:'%H' "
 
     #    IO.inspect(vsn, label: "vsn")
