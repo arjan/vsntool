@@ -1,6 +1,6 @@
 # `vsntool` - Lean-and-mean version bumping tool
 
-[![Build Status](https://travis-ci.org/arjan/vsntool.svg?branch=master)](https://travis-ci.org/arjan/vsntool)
+[![CI](https://github.com/arjan/vsntool/actions/workflows/ci.yml/badge.svg)](https://github.com/arjan/vsntool/actions/workflows/ci.yml)
 
 The `vsntool` maintains git tags and a text file, VERSION, which
 tracks the current software's version number. It provides an easy
