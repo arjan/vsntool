@@ -26,7 +26,7 @@ defmodule Vsntool.JsonPatcher do
 
   def change_version(contents, path, vsn) do
     vsn_el = List.last(path)
-    {:ok, version_re} = Regex.compile("(\"#{vsn_el}\":\s*)\"(.*?)\"")
+    {:ok, version_re} = Regex.compile("(\"#{vsn_el}\":\\s*)\"(.*?)\"")
 
     case {get_in(Jason.decode!(contents), path), Regex.run(version_re, contents)} do
       {nil, _} ->

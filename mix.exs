@@ -8,8 +8,7 @@ defmodule Vsntool.MixProject do
     [
       app: :vsntool,
       version: @version,
-      elixir: "~> 1.6",
-      build_embedded: Mix.env() == :prod,
+      elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       escript: [main_module: Vsntool],
       deps: deps(),
@@ -27,7 +26,7 @@ defmodule Vsntool.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:jason, "~> 1.0"}
+      {:jason, "~> 1.4"}
     ]
   end
 
