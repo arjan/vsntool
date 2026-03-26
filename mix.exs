@@ -2,7 +2,7 @@ defmodule Vsntool.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/arjan/vsntool"
-  @version File.read!("VERSION")
+  @version File.read!("VERSION") |> String.trim()
 
   def project do
     [
