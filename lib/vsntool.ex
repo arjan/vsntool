@@ -176,6 +176,9 @@ defmodule Vsntool do
           shell("git tag -a '#{vsn_prefix()}#{vsn}' -m 'Tagged version #{vsn}'")
         end
 
+        shell("git push")
+        shell("git push --tags")
+
         IO.puts("Version bump to #{vsn} OK.")
 
       ^vsn ->
