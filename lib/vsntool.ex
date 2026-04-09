@@ -17,7 +17,8 @@ defmodule Vsntool do
     "v" => "--version"
   }
   @shortcuts Map.keys(@options)
-  @commands Map.values(@options)
+  @next_commands ~w(next_major next_minor next_patch next_rc)
+  @commands Map.values(@options) ++ @next_commands
 
   @kinds ~w(major minor patch)
 
@@ -71,6 +72,40 @@ defmodule Vsntool do
     do_bump(kind, [])
   end
 
+  def execute("next_" <> kind, ["--dev"]) when kind in @kinds do
+    do_next(kind, ["dev"])
+  end
+
+  def execute("next_" <> kind, ["--rc"]) when kind in @kinds do
+    do_next(kind, ["rc.0"])
+  end
+
+  def execute("next_" <> kind, []) when kind in @kinds do
+    do_next(kind, [])
+  end
+
+  def execute("next_rc", []) do
+    assert_release_branch()
+    vsn = version_from_file!()
+
+    pre =
+      case vsn.pre do
+        ["dev"] ->
+          ["rc", 0]
+
+        _other ->
+          n = rc_number(vsn)
+
+          if n == nil do
+            flunk("Need to be on a RC version number to bump, currently on #{vsn}")
+          end
+
+          ["rc", n + 1]
+      end
+
+    IO.puts(%{vsn | pre: pre})
+  end
+
   def execute("last", []) do
     IO.puts(version_from_file!())
   end
@@ -122,6 +157,10 @@ defmodule Vsntool do
       bm, bump_major  Bump major version (with --dev option)
       bi, bump_minor  Bump minor version (with --dev option)
       bp, bump_patch  Bump patch version (with --dev option)
+      next_major      Print next major version after bump (with --dev or --rc)
+      next_minor      Print next minor version after bump (with --dev or --rc)
+      next_patch      Print next patch version after bump (with --dev or --rc)
+      next_rc         Print next RC version after bump_rc
       c,  current     Current version
       l,  last        Last released version
       h,  help        Display this help
@@ -132,7 +171,9 @@ defmodule Vsntool do
   end
 
   def execute("usage", []) do
-    flunk("Usage: vsntool (init|bump_major|bump_minor|bump_patch|current|last|help)")
+    flunk(
+      "Usage: vsntool (init|bump_major|bump_minor|bump_patch|next_major|next_minor|next_patch|next_rc|current|last|help)"
+    )
   end
 
   def execute("init", []) do
@@ -204,6 +245,25 @@ defmodule Vsntool do
     version = %{version | pre: pre}
 
     persist_version(version)
+  end
+
+  defp do_next(kind, pre) do
+    assert_release_branch()
+
+    vsn = version_from_file!()
+    git_vsn = version_from_git()
+
+    if vsn == git_vsn && System.get_env("FORCE") != "true" do
+      flunk("Current commit is already tagged (#{vsn})")
+    end
+
+    if vsn.pre != [] do
+      flunk("Cannot bump when on prerelease (#{vsn})")
+    end
+
+    version = bump(String.to_atom(kind), vsn)
+    version = %{version | pre: pre}
+    IO.puts(version)
   end
 
   defp assert_release_branch() do

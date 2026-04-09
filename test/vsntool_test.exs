@@ -77,6 +77,29 @@ defmodule VsntoolTest do
            end) =~ "1.0.0"
   end
 
+  test "next_* prints bump preview without persisting" do
+    capture_io(fn ->
+      Vsntool.main(["init", "1.2.3"])
+    end)
+
+    assert File.read!("VERSION") |> String.trim() == "1.2.3"
+
+    assert capture_io(fn -> Vsntool.main(["next_patch"]) end) == "1.2.4\n"
+    assert capture_io(fn -> Vsntool.main(["next_minor"]) end) == "1.3.0\n"
+    assert capture_io(fn -> Vsntool.main(["next_major"]) end) == "2.0.0\n"
+    assert capture_io(fn -> Vsntool.main(["next_minor", "--dev"]) end) == "1.3.0-dev\n"
+    assert capture_io(fn -> Vsntool.main(["next_patch", "--rc"]) end) == "1.2.4-rc.0\n"
+    assert File.read!("VERSION") |> String.trim() == "1.2.3"
+  end
+
+  test "next_rc prints bump_rc preview" do
+    capture_io(fn ->
+      Vsntool.main(["init", "1.3.0-dev"])
+    end)
+
+    assert capture_io(fn -> Vsntool.main(["next_rc"]) end) == "1.3.0-rc.0\n"
+  end
+
   test "vsntool init w/ specific version" do
     capture_io(fn ->
       Vsntool.main(["init", "1.3.0"])
@@ -151,6 +174,7 @@ defmodule VsntoolTest do
     assert ["1.3.0", "2.0.0-rc.0"] == Util.shell("git tag -l") |> String.split("\n")
 
     assert assert_raise Vsntool.Flunk, fn -> Vsntool.execute(["bump_patch"]) end
+    assert assert_raise Vsntool.Flunk, fn -> Vsntool.execute(["next_patch"]) end
   end
 
   test "vsntool on git branch" do
