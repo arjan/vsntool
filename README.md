@@ -93,6 +93,21 @@ Current commit is already tagged (0.1.2)
 To release a new version, do another commit before doing another version bump,
 or use the `FORCE=true` environment variable to force the version.
 
+To **print** the version that a bump would produce—without writing `VERSION`,
+running hooks, committing, or tagging—use `next_major`, `next_minor`,
+`next_patch`, or `next_rc`. They follow the same checks as `bump_*` and
+`bump_rc` (release branch, already-tagged commit unless `FORCE=true`, and no
+bump from an existing prerelease for the semver bumps).
+
+```
+▶ vsntool next_patch
+0.1.2
+```
+
+`next_major`, `next_minor`, and `next_patch` accept `--dev` and `--rc` like
+their bump counterparts. `next_rc` mirrors `bump_rc` (e.g. `-dev` → first
+`-rc.0`, then the next RC number).
+
 ### Development versions / Release candidates workflow
 
 Usually after a release you want to set the current project version to a `dev`
@@ -183,7 +198,7 @@ version that is going to be bumped.
 To enable command completion, add the following to your `~/.zshrc` or `~/.bashrc`:
 
 ```
-complete -W "init bump_major bump_minor bump_patch last" vsntool
+complete -W "init bump_major bump_minor bump_patch next_major next_minor next_patch next_rc last" vsntool
 ```
 
 ## Building
