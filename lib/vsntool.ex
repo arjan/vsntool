@@ -198,44 +198,51 @@ defmodule Vsntool do
   end
 
   def persist_version(vsn) do
-    case shell("git tag -l #{vsn}") do
+    vsn_str = to_string(vsn)
+
+    case shell("git tag -l #{vsn_str}") do
       "" ->
-        call_hook("pre_persist", [to_string(vsn)])
+        do_persist_version(vsn)
 
-        File.write!("VERSION", to_string(vsn) <> "\n")
-
-        Plugin.discover()
-        |> Enum.map(fn {plugin, file} ->
-          IO.puts("* plugin: #{inspect(plugin)} → #{file}")
-          plugin.persist_version(vsn, file)
-        end)
-
-        shell("git add VERSION")
-        shell("git commit -n -m 'Bump version to #{vsn}'")
-
-        if vsn.pre != ["dev"] do
-          shell("git tag -a '#{vsn_prefix()}#{vsn}' -m 'Tagged version #{vsn}'")
+      ^vsn_str ->
+        if commit_for_ref(vsn_str) == head_commit() do
+          shell("git push")
+          shell("git push --tags")
+          IO.puts("Version bump to #{vsn} OK.")
+        else
+          flunk("There is already a git tag called #{vsn}")
         end
-
-        shell("git push")
-        shell("git push --tags")
-
-        IO.puts("Version bump to #{vsn} OK.")
-
-      ^vsn ->
-        flunk("There is already a git tag called #{vsn}")
     end
+  end
+
+  defp do_persist_version(vsn) do
+    call_hook("pre_persist", [to_string(vsn)])
+
+    File.write!("VERSION", to_string(vsn) <> "\n")
+
+    Plugin.discover()
+    |> Enum.map(fn {plugin, file} ->
+      IO.puts("* plugin: #{inspect(plugin)} → #{file}")
+      plugin.persist_version(vsn, file)
+    end)
+
+    shell("git add VERSION")
+    shell("git commit -n -m 'Bump version to #{vsn}'")
+
+    if vsn.pre != ["dev"] do
+      shell("git tag -a '#{vsn_prefix()}#{vsn}' -m 'Tagged version #{vsn}'")
+    end
+
+    shell("git push")
+    shell("git push --tags")
+
+    IO.puts("Version bump to #{vsn} OK.")
   end
 
   defp do_bump(kind, pre) do
     assert_release_branch()
 
     vsn = version_from_file!()
-    git_vsn = version_from_git()
-
-    if vsn == git_vsn && System.get_env("FORCE") != "true" do
-      flunk("Current commit is already tagged (#{vsn})")
-    end
 
     if vsn.pre != [] do
       flunk("Cannot bump when on prerelease (#{vsn})")
@@ -251,11 +258,6 @@ defmodule Vsntool do
     assert_release_branch()
 
     vsn = version_from_file!()
-    git_vsn = version_from_git()
-
-    if vsn == git_vsn && System.get_env("FORCE") != "true" do
-      flunk("Current commit is already tagged (#{vsn})")
-    end
 
     if vsn.pre != [] do
       flunk("Cannot bump when on prerelease (#{vsn})")

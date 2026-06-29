@@ -12,8 +12,6 @@ defmodule VsntoolTest do
     File.mkdir!(path)
     File.cd!(path)
 
-    System.put_env("FORCE", "true")
-
     on_exit(fn ->
       File.rm_rf!(path)
     end)
@@ -324,5 +322,52 @@ defmodule VsntoolTest do
                end
              end) =~ ~r/Hello/
     end
+
+    test "pre_persist hook commit before version bump" do
+      hookfile = ".vsntool/hooks/pre_persist"
+      File.mkdir_p!(Path.dirname(hookfile))
+
+      File.write!(hookfile, """
+      #!/bin/bash
+
+      echo "hook" > hook.txt
+      git add hook.txt
+      git commit -m "hook commit for $1"
+      exit 0
+      """)
+
+      File.chmod!(hookfile, 0o755)
+
+      capture_io(fn ->
+        Vsntool.main(["init", "1.0.0"])
+      end)
+
+      assert capture_io(fn ->
+               Vsntool.main(["bump_patch"])
+             end) =~ "1.0.1"
+
+      assert ["1.0.0", "1.0.1"] == Util.shell("git tag -l") |> String.split("\n")
+      assert Util.commit_for_ref("1.0.1") == Util.head_commit()
+    end
+  end
+
+  test "bump from tagged commit without extra commits" do
+    capture_io(fn ->
+      Vsntool.main(["init", "1.0.0"])
+    end)
+
+    assert capture_io(fn ->
+             Vsntool.main(["bump_patch"])
+           end) =~ "1.0.1"
+  end
+
+  test "persist is idempotent when tag already on current commit" do
+    capture_io(fn ->
+      Vsntool.main(["init", "1.0.0"])
+    end)
+
+    assert capture_io(fn ->
+             Vsntool.persist_version(Version.parse!("1.0.0"))
+           end) =~ "1.0.0 OK"
   end
 end

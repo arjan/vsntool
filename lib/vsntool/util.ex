@@ -60,6 +60,14 @@ defmodule Vsntool.Util do
     |> String.replace("HEAD", "")
   end
 
+  def head_commit() do
+    commit_for_ref("HEAD")
+  end
+
+  def commit_for_ref(ref) do
+    shell("git log -n 1 --pretty=format:'%H' #{ref}")
+  end
+
   def hash() do
     # align to CI_COMMIT_SHORT_SHA
     hash = shell("git rev-parse --short=8 HEAD")

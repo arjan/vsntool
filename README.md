@@ -83,21 +83,16 @@ Once a repo has been initialized, you can use the `bump_major`,
 Version bump to 0.1.2 OK.
 ```
 
-Note that vsntool will refuse to tag a commit twice:
-
-```
-▶ vsntool bump_patch
-Current commit is already tagged (0.1.2)
-```
-
-To release a new version, do another commit before doing another version bump,
-or use the `FORCE=true` environment variable to force the version.
+Note that vsntool will refuse to reuse a version tag that already exists on a
+different commit. If the tag already points at the current commit (for example
+after a hook created intermediate commits or a previous run was interrupted),
+the bump is treated as idempotent.
 
 To **print** the version that a bump would produce—without writing `VERSION`,
 running hooks, committing, or tagging—use `next_major`, `next_minor`,
 `next_patch`, or `next_rc`. They follow the same checks as `bump_*` and
-`bump_rc` (release branch, already-tagged commit unless `FORCE=true`, and no
-bump from an existing prerelease for the semver bumps).
+`bump_rc` (release branch and no bump from an existing prerelease for the
+semver bumps).
 
 ```
 ▶ vsntool next_patch
